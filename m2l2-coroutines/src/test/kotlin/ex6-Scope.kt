@@ -43,6 +43,29 @@ class Ex6Scope {
         }
 
         println("This: ${scope.scopeToString()}")
+
+        Thread.sleep(2000)
+    }
+
+    @Test
+    fun xxx() {
+        runBlocking {
+            launch {
+                throw RuntimeException()
+            }
+            launch {
+                delay(2000)
+            }
+            //delay(3000)
+        }
+    }
+
+    suspend fun sf() {
+        coroutineScope {
+            launch(SomeData(10, 20) + Dispatchers.IO + CoroutineName("sf")) {
+                delay(1000)
+            }
+        }
     }
 
     data class SomeData(val x: Int, val y: Int) : AbstractCoroutineContextElement(SomeData) {

@@ -141,24 +141,26 @@ class Ex8Exceptions {
 
     @Test
     fun supervisorJob2() {
-        val scope = CoroutineScope(Dispatchers.Default + handler("top") + SupervisorJob())
+        val scope = CoroutineScope(Dispatchers.Default + handler("top"))
         scope.launch {// ***
             launch {
                 delay(100)
                 println("cor1")
             }
-            launch(SupervisorJob()) {
-                delay(50)
-                Integer.parseInt("a") // 1 - комментируем
-                // 1 - ops
-                println("cor2")
+            supervisorScope {
+                launch {
+                    delay(50)
+                    Integer.parseInt("a") // 1 - комментируем
+                    // 1 - ops
+                    println("cor2")
+                }
             }
 
             delay(100)
             println("super")
         }
 
-        // scope.cancel() // 1 - раскомментируем
+        //scope.cancel() // 1 - раскомментируем
 
         Thread.sleep(2000)
 

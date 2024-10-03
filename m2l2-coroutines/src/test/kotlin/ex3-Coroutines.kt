@@ -4,11 +4,16 @@ package ru.otus.otuskotlin.coroutines
 
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
+import kotlin.coroutines.coroutineContext
 import kotlin.test.Test
 
 class Ex3Coroutines {
+
     private suspend fun someMethod(): String { // ***
         println("Some method")
+        println(coroutineContext[Job])
+
         delay(1000) // ***
         return "Some data"
     }
@@ -23,27 +28,24 @@ class Ex3Coroutines {
 
     @Suppress("unused")
     fun x() {
+        GlobalScope.launch {
+
+
+        }
+        //doSomething { someMethod() }
 //        someMethod()
     }
 
     @Test
-    fun coro(): Unit = runBlocking {// ***
-        launch {// ***
-            try {
-                val str = someMethod()
-                println("Apply")
-                val len = str.length
-
-                val num = otherMethod(len)
-                println("Complete $num")
-            } catch (ex: Exception) {
-                println("Exception $ex")
-            }
-        }.join()
-        println("Complete")
+    fun coro(): Unit {
+        runBlocking {// ***
+            someMethod()
+        }
+        println("====")
     }
 
     fun doSomething(block: suspend (Int) -> Unit) {
+        runBlocking { block(1) }
     }
 
     fun simpleMethod(i: Int) {
@@ -54,7 +56,7 @@ class Ex3Coroutines {
         val list = listOf(1, 2, 3)
 
         list.forEach { otherMethod(it) } // это работает, потому что inline
-//        list.forEach (Consumer { otherMethod(it) }) // это не работает, потому что ждут обычную функцию
+        //list.forEach (Consumer { otherMethod(it) }) // это не работает, потому что ждут обычную функцию
 
         doSomething(::otherMethod) // ждут suspend и передаем его
         doSomething(::simpleMethod) // ждут suspend, передаем обычный метод - это ок, котлин вставит преобразование
