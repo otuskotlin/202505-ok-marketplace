@@ -8,7 +8,7 @@ import ru.otus.otuskotlin.marketplace.logging.common.LogLevel
 class MpLoggerWrapperKermit(
     val logger: Logger,
     override val loggerId: String
-) : IMpLogWrapper {
+    ) : IMpLogWrapper {
 
     override fun log(
         msg: String,
