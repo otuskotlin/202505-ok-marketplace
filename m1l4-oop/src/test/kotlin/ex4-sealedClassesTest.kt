@@ -15,6 +15,8 @@ class ChildB : Base {
     }
 }
 
+object ChildC : Base
+
 // Uncomment this to get compilation error
 //class ChildC : Base
 
@@ -26,6 +28,7 @@ class SealedTest {
         val result = when (obj) {
             is ChildA -> "a"
             is ChildB -> "b"
+            is ChildC -> "c"
         }
 
         println(result)

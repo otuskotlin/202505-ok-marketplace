@@ -4,16 +4,21 @@ import kotlin.test.assertEquals
 class GenericTest {
     @Test
     fun invariant() {
+        // val obj: ISome<Number> = IntSome(1) // Не работает!!!
         assertEquals(3, (IntSome(1) + IntSome(2)).value)
     }
 
     @Test
     fun covariant() {
+        @Suppress("UNUSED_VARIABLE")
+        val obj: IParse<Number> = CovariantCls() // IParse<Int> -- Работает!
         assertEquals(3, CovariantCls().parse("3"))
     }
 
     @Test
     fun contravariant() {
+        @Suppress("UNUSED_VARIABLE")
+        val obj: IToString<Int> = ContravariantCls() // IToString<Number> -- Работает!
         assertEquals("3", ContravariantCls().toStr(3))
     }
 
@@ -25,7 +30,7 @@ class GenericTest {
         override fun plus(other: IntSome): IntSome = IntSome(value + other.value)
     }
 
-    private interface IParse<out T> {
+    private interface IParse<out T: Number> {
         fun parse(str: String): T
     }
 
@@ -37,7 +42,7 @@ class GenericTest {
         fun toStr(i: T): String
     }
 
-    private class ContravariantCls: IToString<Int> {
-        override fun toStr(i: Int): String = i.toString()
+    private class ContravariantCls: IToString<Number> {
+        override fun toStr(i: Number): String = i.toString()
     }
 }

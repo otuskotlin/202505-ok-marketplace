@@ -1,6 +1,6 @@
 import kotlin.test.Test
 
-abstract class BaseClass() {
+abstract class BaseClass {
 
 }
 
@@ -11,8 +11,9 @@ interface IClass {
 @Suppress("unused")
 class InheritedClass(
     arg: String,
-    val prop: String = arg,
+    val prop: String = arg
 ) : IClass, BaseClass() {
+    val x: String = arg
     init {
         println("Init in constructor with $arg")
     }
