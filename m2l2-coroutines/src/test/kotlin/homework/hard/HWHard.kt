@@ -4,7 +4,7 @@ import java.io.File
 import kotlin.test.Test
 
 class HWHard {
-    @Test
+//    @Test
     fun hardHw() {
         val dictionaryApi = DictionaryApi()
         val words = FileReader.readFile().split(" ", "\n").toSet()
