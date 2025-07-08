@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.coroutines
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.time.delay
 import kotlin.concurrent.thread
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -11,14 +12,14 @@ class Ex10Dispatchers {
         repeat(30) {
             launch {
                 println("coroutine $it, start")
-                Thread.sleep(500)
+                delay(500)
                 println("coroutine $it, end")
             }
         }
     }
 
     @Test
-    fun default() = runBlocking {
+    fun default() = runBlocking(Dispatchers.Default) {
         createCoro()
     }
 
@@ -31,26 +32,26 @@ class Ex10Dispatchers {
     fun custom() = runBlocking {
 //        val dispatcher = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
         @OptIn(DelicateCoroutinesApi::class)
-        val dispatcher = newFixedThreadPoolContext(8, "single")
+        val dispatcher = newFixedThreadPoolContext(1, "single")
         dispatcher.use {
             withContext(Job() + dispatcher) { createCoro() }
         }
     }
 
     @Test
-    fun unconfined(): Unit = runBlocking(Dispatchers.Default) {
+    fun unconfined(): Unit = runBlocking(Dispatchers.Unconfined) {
         withContext(Dispatchers.Unconfined) {
             launch() {
                 println("start coroutine ${Thread.currentThread().name}")
                 suspendCoroutine {
-                    println("suspend function, start")
+                    println("suspend function, start ${Thread.currentThread().name}")
                     thread {
-                        println("suspend function, background work")
+                        println("suspend function, background work ${Thread.currentThread().name}")
                         Thread.sleep(1000)
-                        it.resume("Data!")
+                        it.resume("Data! ${Thread.currentThread().name}")
                     }
                 }
-                println("end coroutine")
+                println("end coroutine ${Thread.currentThread().name}")
             }
         }
     }

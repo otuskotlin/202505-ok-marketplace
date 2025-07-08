@@ -53,7 +53,7 @@ class Ex5Job {
         val job1 = launch {
             for (i in 1..1000) {
                 x()
-                //if (!isActive) break
+                if (!isActive) break
             }
             println("Job complete")
         }

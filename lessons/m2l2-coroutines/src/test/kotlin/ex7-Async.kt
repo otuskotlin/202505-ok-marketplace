@@ -14,9 +14,9 @@ class Ex7Async {
         val res1 = async {
             delay(1000)
             println("async1")
-            42
+            "Hello"
         }
-        val res2 = async {
+        val res2 = async(start = CoroutineStart.LAZY) {
             delay(500)
             println("async2")
             42
