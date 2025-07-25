@@ -1,6 +1,7 @@
 # 202505-ok-marketplace
 
 Учебный проект курса
+[Kotlin Backend Developer](https://otus.ru/lessons/kotlin/).
 Поток курса 2025-05.
 
 Marketplace -- это площадка, на которой пользователи выставляют предложения и потребности. Задача
@@ -24,6 +25,8 @@ Marketplace -- это площадка, на которой пользовате
     1. [ADR](docs/03-architecture/01-adrs.md)
     2. [Описание API](docs/03-architecture/02-api.md)
     3. [Архитектурные схемы](docs/03-architecture/03-arch.md)
+4. DevOps
+    1. [Файлы сборки](./deploy)
 
 # Структура проекта
 
