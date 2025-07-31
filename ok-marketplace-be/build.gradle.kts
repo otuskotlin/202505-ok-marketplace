@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
 }
 
-group = "com.otus.otuskotlin.marketplace"
+group = "ru.otus.otuskotlin.marketplace"
 version = "0.0.1"
 
 allprojects {
@@ -17,10 +17,15 @@ subprojects {
     version = rootProject.version
 }
 
+ext {
+    val specDir = layout.projectDirectory.dir("../specs")
+    set("spec-v1", specDir.file("specs-ad-v1.yaml").toString())
+    set("spec-v2", specDir.file("specs-ad-v2.yaml").toString())
+}
+
 tasks {
     register("build" ) {
         group = "build"
-        dependsOn(project(":ok-marketplace-tmp").getTasksByName("build",false))
     }
     register("check" ) {
         group = "verification"
