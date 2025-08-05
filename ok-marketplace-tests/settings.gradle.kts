@@ -20,10 +20,6 @@ pluginManagement {
     }
 }
 
-//plugins {
-//    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
-//}
-
 //include(":ok-marketplace-api-v1-jackson")
 //include(":ok-marketplace-api-v2-kmp")
 include(":ok-marketplace-e2e-be")

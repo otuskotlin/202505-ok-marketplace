@@ -6,7 +6,11 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("ru.otus.otuskotlin.marketplace:ok-marketplace-api-v1-jackson")
+    implementation("ru.otus.otuskotlin.marketplace:ok-marketplace-api-v1-mappers")
     implementation("ru.otus.otuskotlin.marketplace:ok-marketplace-api-v2-kmp")
+    implementation("ru.otus.otuskotlin.marketplace:ok-marketplace-stubs")
+
+    testImplementation(kotlin("test-junit5"))
 
     testImplementation(libs.logback)
     testImplementation(libs.kermit)
