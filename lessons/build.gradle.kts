@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") apply false
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
 }
 
 group = "com.otus.otuskotlin.marketplace"
