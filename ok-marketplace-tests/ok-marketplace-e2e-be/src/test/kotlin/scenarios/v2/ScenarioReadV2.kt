@@ -9,12 +9,12 @@ import ru.otus.otuskotlin.marketplace.e2e.be.scenarios.v2.base.someCreateAd
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-abstract class ScenarioCreateDeleteV2(
+abstract class ScenarioReadV2(
     private val client: Client,
     private val debug: AdDebug? = null
 ) {
     @Test
-    fun createDelete() = runBlocking {
+    fun read() = runBlocking {
         val obj = someCreateAd
         val resCreate = client.sendAndReceive(
             "ad/create", AdCreateRequest(
@@ -30,6 +30,25 @@ abstract class ScenarioCreateDeleteV2(
         assertEquals(obj.description, cObj.description)
         assertEquals(obj.visibility, cObj.visibility)
         assertEquals(obj.adType, cObj.adType)
+
+        val rObj = AdReadObject(
+            id = cObj.id,
+        )
+        val resRead = client.sendAndReceive(
+            "ad/read",
+            AdReadRequest(
+                debug = debug,
+                ad = rObj,
+            )
+        ) as AdReadResponse
+
+        assertEquals(ResponseResult.SUCCESS, resRead.result)
+
+        val rrObj: AdResponseObject = resRead.ad ?: fail("No ad in Read response")
+        assertEquals(obj.title, rrObj.title)
+        assertEquals(obj.description, rrObj.description)
+        assertEquals(obj.visibility, rrObj.visibility)
+        assertEquals(obj.adType, rrObj.adType)
 
         val resDelete = client.sendAndReceive(
             "ad/delete", AdDeleteRequest(
