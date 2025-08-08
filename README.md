@@ -46,6 +46,7 @@ Marketplace -- это площадка, на которой пользовате
        1. [m2l5-1-interop](lessons/m2l5-1-interop) - Интероперабельность Kotlin Native с C
        2. [m2l5-2-jni](lessons/m2l5-2-jni) - Интероперабельность Kotlin JVM с C
    6. [m4l3-testing](ok-marketplace-tests) - Тестирование проекта
+   7. [m2l4-monitoring](ok-marketplace-libs) - Мониторинг, сбор логов и метрик
 
 ### Плагины Gradle сборки проекта
 
