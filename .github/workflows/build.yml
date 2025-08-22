@@ -27,6 +27,18 @@ jobs:
     #    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      #        with:
+      #          submodules: recursive
+      #          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Restore cached Primes
+        id: cache-primes-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .gradle
+            .kotlin
+          key: ${{ runner.os }}-primes
 
       - name: Set up JDK 21
         uses: actions/setup-java@v3
@@ -37,8 +49,24 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
+#      # https://github.com/actions/runner-images/issues/675
+#      - name: Hack sources.list
+#        run: sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu/|http://mirror.arizona.edu/ubuntu/|g' /etc/apt/sources.list
+#
+#      - name: Install curl-dev
+#        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libpq-dev libpq5
+
       - name: Run Tests
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 8.6
+          gradle-version: 8.10.1
           arguments: check -i
+
+      - name: Save Primes
+        id: cache-primes-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .gradle
+            .kotlin
+          key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
