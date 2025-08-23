@@ -78,5 +78,5 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 
 # Spring
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.4" }
+spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.7" }
 spring-kotlin = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
