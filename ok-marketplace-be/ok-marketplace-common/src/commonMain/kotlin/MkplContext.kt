@@ -14,10 +14,11 @@ data class MkplContext(
 
     var requestId: MkplRequestId = MkplRequestId.NONE,
     var timeStart: Instant = Instant.NONE,
+
     var adRequest: MkplAd = MkplAd(),
     var adFilterRequest: MkplAdFilter = MkplAdFilter(),
 
     var adResponse: MkplAd = MkplAd(),
     var adsResponse: MutableList<MkplAd> = mutableListOf(),
+)
 
-    )
