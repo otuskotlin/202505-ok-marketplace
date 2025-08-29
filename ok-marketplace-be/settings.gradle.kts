@@ -13,6 +13,7 @@ pluginManagement {
     plugins {
         id("build-jvm") apply false
         id("build-kmp") apply false
+        id("build-docker") apply false
     }
     repositories {
         mavenCentral()
@@ -41,3 +42,4 @@ include(":ok-marketplace-app-common")
 //include(":ok-marketplace-app-tmp")
 include(":ok-marketplace-app-spring")
 include(":ok-marketplace-app-ktor")
+include(":ok-marketplace-app-rabbit")
