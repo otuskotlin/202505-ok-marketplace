@@ -2,7 +2,6 @@ plugins {
     id("build-jvm")
     application
     alias(libs.plugins.shadowJar)
-//    alias(libs.plugins.muschko.java)
     id("build-docker")
 }
 
@@ -42,6 +41,12 @@ dependencies {
 }
 
 tasks {
+    shadowJar {
+        manifest {
+            attributes(mapOf("Main-Class" to application.mainClass.get()))
+        }
+    }
+
     dockerBuild {
         dependsOn("shadowJar")
     }
