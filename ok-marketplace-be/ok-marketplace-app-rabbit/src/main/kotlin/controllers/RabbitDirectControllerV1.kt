@@ -28,8 +28,8 @@ class RabbitDirectControllerV1(
             },
             {
                 val res = toTransportAd()
-                apiV1Mapper.writeValueAsBytes(res).also {
-                    basicPublish(exchangeConfig.exchange, exchangeConfig.keyOut, null, it)
+                apiV1Mapper.writeValueAsBytes(res).also { msg ->
+                    basicPublish(exchangeConfig.exchange, exchangeConfig.keyOut, null, msg)
                 }
             },
             this@RabbitDirectControllerV1::class,
@@ -43,8 +43,8 @@ class RabbitDirectControllerV1(
         context.state = MkplState.FAILING
         context.errors.add(e.asMkplError())
         val response = context.toTransportAd()
-        apiV1Mapper.writeValueAsBytes(response).also {
-            basicPublish(exchangeConfig.exchange, exchangeConfig.keyOut, null, it)
+        apiV1Mapper.writeValueAsBytes(response).also { msg ->
+            basicPublish(exchangeConfig.exchange, exchangeConfig.keyOut, null, msg)
         }
     }
 }
