@@ -22,14 +22,14 @@ class RabbitApp(
 
     fun start() {
         runFlag.set(true)
-        controllers.forEach {
+        controllers.forEach { controller ->
             scope.launch(
-                Dispatchers.IO.limitedParallelism(1) + CoroutineName("thread-${it.exchangeConfig.consumerTag}")
+                Dispatchers.IO.limitedParallelism(1) + CoroutineName("thread-${controller.exchangeConfig.consumerTag}")
             ) {
                 while (runFlag.get()) {
                     try {
-                        logger.info("Process...${it.exchangeConfig.consumerTag}")
-                        it.process()
+                        logger.info("Process...${controller.exchangeConfig.consumerTag}")
+                        controller.process()
                     } catch (e: RuntimeException) {
                         // логируем, что-то делаем
                         logger.error("Обработка завалена, возможно из-за потери соединения с RabbitMQ. Рестартуем")
