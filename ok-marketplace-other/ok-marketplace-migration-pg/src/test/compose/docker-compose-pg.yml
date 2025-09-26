@@ -23,7 +23,6 @@ services:
       LIQUIBASE_COMMAND_PASSWORD: "marketplace-pass"
       LIQUIBASE_LIQUIBASE_SCHEMA_NAME: public
 #      tableName: marketplace_ads
-
     depends_on:
       psql:
         condition: service_healthy

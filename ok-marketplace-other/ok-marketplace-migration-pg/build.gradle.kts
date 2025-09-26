@@ -36,10 +36,6 @@ tasks {
         dependsOn(dockerBuild)
     }
 
-    val clean by creating {
-//        dependsOn(dockerClean)
-    }
-
     val pgDn by creating {
         group = "db"
         doFirst {
