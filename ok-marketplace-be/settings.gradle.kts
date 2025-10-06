@@ -29,3 +29,4 @@ plugins {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":ok-marketplace-tmp")
+include(":ok-marketplace-infra")
