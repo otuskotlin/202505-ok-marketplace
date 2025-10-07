@@ -28,8 +28,9 @@ jib {
 
 docker {
     buildContext = project.layout.buildDirectory.dir("docker-x64").get().toString()
-    imageName = "ok-marketplace-app-ktor-x64"
+    imageName = "${project.name}-x64"
     dockerFile = "Dockerfile"
+    imageTag = "${project.version}"
 }
 
 kotlin {
@@ -159,10 +160,10 @@ tasks {
         group = "docker"
         doFirst {
             copy {
-//                from("./Dockerfile").rename { "Dockerfile" }
+                from("Dockerfile") //.rename { "Dockerfile" }
                 from(nativeFileX64)
                 from(linuxX64ProcessResources.destinationDir)
-                println("BUILD CONTEXT: ${buildContext.get().toString()}")
+                println("BUILD CONTEXT: ${buildContext.get()}")
                 into(buildContext)
             }
         }
