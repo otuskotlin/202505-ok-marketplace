@@ -25,11 +25,15 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     #    runs-on: macos-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - uses: actions/checkout@v4
-      #        with:
-      #          submodules: recursive
-      #          token: ${{ secrets.PAT_TOKEN }}
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Restore cached Primes
         id: cache-primes-restore
@@ -57,10 +61,12 @@ jobs:
 #        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libpq-dev libpq5
 
       - name: Run Tests
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.14.1
-          arguments: buildImages e2eTests
+          arguments: buildMigrations buildImages e2eTests --info
 
       - name: Save Primes
         id: cache-primes-save

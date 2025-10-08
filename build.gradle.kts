@@ -30,11 +30,10 @@ tasks {
     }
 
     val buildImages: Task by creating {
-        dependsOn(buildMigrations)
         dependsOn(gradle.includedBuild("ok-marketplace-be").task(":buildImages"))
+        mustRunAfter(buildMigrations)
     }
     val e2eTests: Task by creating {
-        dependsOn(buildImages)
         dependsOn(gradle.includedBuild("ok-marketplace-tests").task(":e2eTests"))
         mustRunAfter(buildImages)
     }
@@ -42,5 +41,6 @@ tasks {
     register("check") {
         group = "verification"
         dependsOn(gradle.includedBuild("ok-marketplace-be").task(":check"))
+        dependsOn(e2eTests)
     }
 }
