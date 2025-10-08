@@ -34,7 +34,6 @@ tasks {
         dependsOn(gradle.includedBuild("ok-marketplace-be").task(":buildImages"))
     }
     val e2eTests: Task by creating {
-        dependsOn(buildImages)
         dependsOn(gradle.includedBuild("ok-marketplace-tests").task(":e2eTests"))
         mustRunAfter(buildImages)
     }
