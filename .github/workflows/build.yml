@@ -66,7 +66,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.14.1
-          arguments: buildImages e2eTests --info
+          arguments: buildMigrations buildImages e2eTests --info
 
       - name: Save Primes
         id: cache-primes-save
