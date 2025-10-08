@@ -6,6 +6,7 @@ plugins {
 
 docker {
     imageName = project.name
+    imageTag = "${project.version}"
     dockerFile = "src/main/docker/Dockerfile"
 }
 
