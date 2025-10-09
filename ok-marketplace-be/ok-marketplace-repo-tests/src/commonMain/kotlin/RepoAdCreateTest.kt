@@ -10,6 +10,7 @@ import kotlin.test.*
 abstract class RepoAdCreateTest {
     abstract val repo: IRepoAdInitializable
     protected open val uuidNew = MkplAdId("10000000-0000-0000-0000-000000000001")
+    protected open val lockNew = MkplAdLock("20000000-0000-0000-0000-000000000002")
 
     private val createObj = MkplAd(
         title = "create object",
@@ -25,6 +26,7 @@ abstract class RepoAdCreateTest {
         val expected = createObj
         assertIs<DbAdResponseOk>(result)
         assertEquals(uuidNew, result.data.id)
+        assertEquals(lockNew, result.data.lock)
         assertEquals(expected.title, result.data.title)
         assertEquals(expected.description, result.data.description)
         assertEquals(expected.adType, result.data.adType)
