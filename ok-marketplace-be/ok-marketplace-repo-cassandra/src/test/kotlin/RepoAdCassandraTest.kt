@@ -10,19 +10,18 @@ import org.testcontainers.containers.ComposeContainer
 import org.testcontainers.containers.output.Slf4jLogConsumer
 import org.testcontainers.containers.wait.strategy.Wait
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.*
-import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 import ru.otus.otuskotlin.marketplace.repo.common.AdRepoInitialized
 import java.io.File
 import java.time.Duration
-import kotlin.test.AfterTest
 
+@Suppress("unused")
 @RunWith(Enclosed::class)
 class CassandraTest {
 
     class RepoAdCassandraCreateTest : RepoAdCreateTest() {
         override val repo = AdRepoInitialized(
             initObjects = initObjects,
-            repo = repository(lockNew.asString())
+            repo = repository(uuidNew.asString())
         )
     }
 
@@ -70,14 +69,14 @@ class CassandraTest {
                 fileDc,
             )
                 .withExposedService(CS_SERVICE, CS_PORT)
-                .withStartupTimeout(Duration.ofSeconds(3000))
+                .withStartupTimeout(Duration.ofMinutes(10))
                 .withLogConsumer(CS_SERVICE, logConsumer)
                 .withLogConsumer(MG_SERVICE, logConsumer)
 //                .withLogConsumer(PG_SERVICE, logConsumer)
                 .waitingFor(
                     MG_SERVICE,
-                    //Wait.forLogMessage(".*Liquibase command 'update' was executed successfully.*", 1)
-                    Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(3000))
+                    Wait.forLogMessage(".*Liquibase command 'update' was executed successfully.*", 1)
+                    //Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofSeconds(5000))
                 )
         }
 
