@@ -7,7 +7,6 @@ import com.datastax.oss.driver.internal.core.type.codec.extras.enums.EnumNameCod
 import com.datastax.oss.driver.internal.core.type.codec.registry.DefaultCodecRegistry
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdCassandraDTO
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdDealSide
 import ru.otus.otuskotlin.marketplace.backend.repo.cassandra.model.AdVisibility
@@ -18,9 +17,6 @@ import ru.otus.otuskotlin.marketplace.common.repo.*
 import ru.otus.otuskotlin.marketplace.repo.common.IRepoAdInitializable
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class RepoAdCassandra(
     private val keyspaceName: String,
@@ -29,9 +25,7 @@ class RepoAdCassandra(
     private val user: String = "cassandra",
     private val pass: String = "cassandra",
     private val dc: String = "dc1",
-    private val timeout: Duration = 30.toDuration(DurationUnit.SECONDS),
     private val randomUuid: () -> String = { uuid4().toString() },
-    initObjects: Collection<MkplAd> = emptyList(),
 ) : AdRepoBase(), IRepoAd, IRepoAdInitializable {
     private val codecRegistry by lazy {
         DefaultCodecRegistry("default").apply {
@@ -53,20 +47,12 @@ class RepoAdCassandra(
     private val mapper by lazy { CassandraMapper.builder(session).build() }
 
     private val dao by lazy {
-        mapper.adDao(keyspaceName, AdCassandraDTO.TABLE_NAME).apply {
-            runBlocking {
-                initObjects.map { model ->
-                    withTimeout(timeout) {
-                        create(AdCassandraDTO(model)).await()
-                    }
-                }
-            }
-        }
+        mapper.adDao(keyspaceName, AdCassandraDTO.TABLE_NAME)
     }
 
     fun clear() = dao.deleteAll()
 
-    override fun save(ads: Collection<MkplAd>): Collection<MkplAd> = ads.onEach { dao.create(AdCassandraDTO(it)) }
+    override fun save(ads: Collection<MkplAd>): Collection<MkplAd> = runBlocking { ads.onEach { dao.create(AdCassandraDTO(it)).await() } }
 
     override suspend fun createAd(rq: DbAdRequest): IDbAdResponse = tryAdMethod {
         val new = rq.ad.copy(id = MkplAdId(randomUuid()), lock = MkplAdLock(randomUuid()))
