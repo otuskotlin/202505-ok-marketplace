@@ -8,11 +8,11 @@ import org.apache.tinkerpop.gremlin.driver.AuthProperties
 import org.apache.tinkerpop.gremlin.driver.Cluster
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
+import org.apache.tinkerpop.gremlin.process.traversal.P.gte
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.apache.tinkerpop.gremlin.structure.VertexProperty
 import org.junit.Test
-import kotlin.test.Ignore
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__` as bs
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__ as bs
 
 /**
  * Для запуска тестов этого файла требуется запустить локальный экземпляр ArcadeDB
@@ -88,7 +88,7 @@ class SimpleTest {
             .authProperties(authProp)
             .create()
         traversal()
-            //               Этот граф должен быть указан в /home/arcadedb/config/gremblin-server.groovy
+            //               Этот граф должен быть указан в /home/arcadedb/config/gremlin-server.groovy
             .withRemote(DriverRemoteConnection.using(cluster, dbName))
             .use { g ->
                 val user = g
@@ -100,96 +100,119 @@ class SimpleTest {
             }
     }
 
-    /**
-     * Демонстрация project
+    /*
+        Vertices:
+            Person(name, age, city)
+            Post(title, text, date)
+
+        Edges:
+            FRIEND
+            LIKES
+            POSTED
      */
     @Test
-    fun projectTest() {
-        val cluster = Cluster.build().apply {
-            addContactPoints(host)
-            port(gPort)
-            credentials(user, pass)
-        }.create()
-        traversal()
-            .withRemote(DriverRemoteConnection.using(cluster)).use { g ->
-                // Создаем юзера
-                val userId = g
-                    .addV("User")
-                    .property("name", "Ivan")
-                    .next()
-                    .id()
-                println("UserID: $userId")
+    fun `define domain model example`() {
+        ArcadeGraphFactory.withRemote(host, aPort, dbName, user, pass).use { graphFactory ->
+            graphFactory.get().use { graph ->
+                // VERTICES
+                val alice = graph.traversal().addV("Person").property("name", "Alice").property("age", 30)
+                    .property("city", "Moscow").next()
+                val bob = graph.traversal().addV("Person").property("name", "Bob").property("age", 32)
+                    .property("city", "Saint-Petersburg").next()
+                val carol = graph.traversal().addV("Person").property("name", "Carol").property("age", 38)
+                    .property("city", "Ekaterinburg").next()
+                val dave = graph.traversal().addV("Person").property("name", "Dave").property("age", 25)
+                    .property("city", "Samara").next()
+                val eve = graph.traversal().addV("Person").property("name", "Eve").property("age", 27)
+                    .property("city", "Kazan").next()
+                listOf(alice, bob, carol, dave, eve).forEach { println("Person ID: ${it.id()}") }
 
-                // Создаем узел и привязываем его к предыдущему через связь Owns
-                val id = g
-                    .addV("Test")
-                    .`as`("a")
-                    .property("lock", "111")
-                    .addE("Owns")
-                    .from(bs.V<Vertex>(userId))
-                    .select<Vertex>("a")
-                    .next()
-                    .id()
-                println("ID: $id")
-
-                // Обычный результат
-                val x = g.V().hasLabel("Test")
-                    .toList()
-                println("CONTENT: ${x}")
-
-                // Это поиск связи по ID
-                val owner = g
-                    .V(userId)
-                    .outE("Owns")
-                    .where(bs.inV().id().`is`(id))
-                    .toList()
-                println("OWNER: $owner")
-
-                // Результат через проект
-                val y = g.V().hasLabel("Test") //.`as`("a")
-                    .project<Any?>("lock", "ownerId", "z")
-                    .by("lock")
-                    // Извлекаем ID связанного объекта (связь через грань Owns
-                    .by(bs.inE("Owns").outV().id())
-                    .by(bs.elementMap<Vertex, Map<Any?, Any?>>())
-                    .toList()
-                println("CONTENT: $y")
+                val p1 = graph.traversal().addV("Post").property("title", "Hello Graphs")
+                    .property("text", "Graphs are awesome!").property("date", "2025-10-13").next()
+                val p2 = graph.traversal().addV("Post").property("title", "Gremlin Tricks")
+                    .property("text", "10 cool Gremlin traversals").property("date", "2025-10-11").next()
+                val p3 = graph.traversal().addV("Post").property("title", "ArcadeDB Tips")
+                    .property("text", "Best practices for schema-less mode").property("date", "2025-10-10").next()
+                val p4 = graph.traversal().addV("Post").property("title", "Graph vs SQL")
+                    .property("text", "Why graphs beat joins").property("date", "2025-10-09").next()
+                val p5 = graph.traversal().addV("Post").property("title", "Tech Scene")
+                    .property("text", "Why Kotlin rocks!").property("date", "2025-10-07").next()
+                listOf(p1, p2, p3, p4, p5).forEach { println("Post ID: ${it.id()}") }
+                // FRIEND EDGES
+                graph.traversal().addE("FRIEND").from(alice).to(bob).next()
+                graph.traversal().addE("FRIEND").from(bob).to(carol).next()
+                graph.traversal().addE("FRIEND").from(carol).to(dave).next()
+                graph.traversal().addE("FRIEND").from(bob).to(eve).next()
+                // POST EDGES
+                graph.traversal().addE("POSTED").from(alice).to(p1).next()
+                graph.traversal().addE("POSTED").from(bob).to(p2).next()
+                graph.traversal().addE("POSTED").from(carol).to(p3).next()
+                graph.traversal().addE("POSTED").from(dave).to(p4).next()
+                graph.traversal().addE("POSTED").from(alice).to(p5).next()
+                // LIKES
+                // Bob и Carol лайкнули пост Алисы
+                graph.traversal().addE("LIKES").from(bob).to(p1).next()
+                graph.traversal().addE("LIKES").from(carol).to(p1).next()
+                // Dave лайкнул пост Bob’а
+                graph.traversal().addE("LIKES").from(dave).to(p2).next()
+                // Eve и Alice лайкнули пост Carol
+                graph.traversal().addE("LIKES").from(eve).to(p3).next()
+                graph.traversal().addE("LIKES").from(alice).to(p3).next()
+                // Carol и Eve лайкнули пост Dave
+                graph.traversal().addE("LIKES").from(carol).to(p4).next()
+                graph.traversal().addE("LIKES").from(eve).to(p4).next()
+                // Bob лайкнул второй пост Алисы
+                graph.traversal().addE("LIKES").from(bob).to(p5).next()
             }
+        }
     }
 
-    /**
-     * Демонстрация условных запросов
-     */
+    // Базовая выборка
     @Test
-    fun gremlinExamples() {
-        val cluster = Cluster.build().apply {
-            addContactPoints(host)
-            port(gPort)
-            credentials(user, pass)
-        }.create()
-        traversal().withRemote(DriverRemoteConnection.using(cluster)).use { g ->
+    fun `all posts alice friends liked`() {
+        ArcadeGraphFactory.withRemote(host, aPort, dbName, user, pass).use { graphFactory ->
+            graphFactory.get().use { graph ->
+                graph.traversal().V().has("Person", "name", "Alice")
+                    .out("FRIEND")
+                    .out("LIKES")
+                    .values<String>("title")
+                    .forEach { println("Post title: $it") }
+            }
+        }
+    }
 
-            // Создаем узел и привязываем его к предыдущему через связь Owns
-            val id = g
-                .addV("Test")
-                .`as`("a")
-                .property("lock", "111")
-                .next()
-                .id()
-            println("ID: $id")
 
-            // Запрос с условием choose
-            val n = g
-                .V(id)
-                .`as`("a")
-                .choose(
-                    bs.select<Vertex, Vertex>("a")
-                        .values<String>("lock")
-                        .`is`("112"),
-                    bs.select<Vertex, String>("a").drop().inject("success"),
-                    bs.constant("lock-failure")
-                ).toList()
-            println("YYY: $n")
+    // Демонстрация Project и by()
+    @Test
+    fun `influencer stats`() {
+        ArcadeGraphFactory.withRemote(host, aPort, dbName, user, pass).use { graphFactory ->
+            graphFactory.get().use { graph ->
+                graph.traversal().V()
+                    .hasLabel("Person")
+                    .project<Map<String, Any>>("name", "likes")
+                    .by("name") // поле "name" заполняется значением свойства name вершины
+                    .by(bs.out("POSTED").`in`("LIKES").count()) // поле "likes" = количество лайков постов
+                    .toList()
+                    .forEach { println(it) }
+            }
+        }
+    }
+
+    // Демонстрация условных запросов choose() (a.k.a if - else)
+    @Test
+    fun `conditional query`() {
+        ArcadeGraphFactory.withRemote(host, aPort, dbName, user, pass).use { graphFactory ->
+            graphFactory.get().use { graph ->
+                graph.traversal().V()
+                    .hasLabel("Person")
+                    .choose(
+                        bs.values<Vertex, Int>("age").`is`(gte(30)), // условие: age >= 30
+                        bs.out("FRIEND").values("name"), // если true → друзья
+                        bs.out("POSTED").values<String>("title")  // если false → посты
+                    )
+                    .toList()
+                    .forEach { println(it) }
+            }
         }
     }
 }
