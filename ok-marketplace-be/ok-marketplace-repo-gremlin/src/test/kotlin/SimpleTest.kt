@@ -12,13 +12,14 @@ import org.apache.tinkerpop.gremlin.process.traversal.P.gte
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.apache.tinkerpop.gremlin.structure.VertexProperty
 import org.junit.Test
+import kotlin.test.Ignore
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__ as bs
 
 /**
  * Для запуска тестов этого файла требуется запустить локальный экземпляр ArcadeDB
  * Можно использовать файл /deploy/docker-compose-arcadedb.yml
  */
-//@Ignore("Тест для экспериментов")
+@Ignore("Тест для экспериментов")
 class SimpleTest {
     private val host: String = "localhost"
     private val user: String = "root"
@@ -212,6 +213,22 @@ class SimpleTest {
                     )
                     .toList()
                     .forEach { println(it) }
+            }
+        }
+    }
+
+    @Test
+    fun `closest friends to Alice`() {
+        ArcadeGraphFactory.withRemote(host, aPort, dbName, user, pass).use { graphFactory ->
+            graphFactory.get().use { graph ->
+                val closestFriends = graph.traversal().V()
+                    .hasLabel("Person").has("name", "Alice")
+                    .repeat(bs.out("FRIEND")).times(2)
+                    .dedup()
+                    .values<String>("name")
+                    .toList()
+                    .toList()
+                println("Через 2 рукопожатия: $closestFriends")
             }
         }
     }
