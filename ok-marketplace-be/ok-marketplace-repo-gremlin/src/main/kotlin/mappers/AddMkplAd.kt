@@ -39,7 +39,7 @@ fun GraphTraversal<Vertex, Vertex>.addMkplAd(ad: MkplAd): GraphTraversal<Vertex,
         )
 
 fun GraphTraversal<Vertex, Vertex>.listMkplAd(result: String = RESULT_SUCCESS): GraphTraversal<Vertex, MutableMap<String, Any>> =
-    project<Any?>(
+    project<Any>(
         FIELD_ID,
         FIELD_OWNER_ID,
         FIELD_LOCK,

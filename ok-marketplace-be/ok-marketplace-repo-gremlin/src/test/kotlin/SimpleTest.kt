@@ -13,7 +13,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.apache.tinkerpop.gremlin.structure.VertexProperty
 import org.junit.Test
 import kotlin.test.Ignore
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__ as bs
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__ as gr
 
 /**
  * Для запуска тестов этого файла требуется запустить локальный экземпляр ArcadeDB
@@ -192,7 +192,7 @@ class SimpleTest {
                     .hasLabel("Person")
                     .project<Map<String, Any>>("name", "likes")
                     .by("name") // поле "name" заполняется значением свойства name вершины
-                    .by(bs.out("POSTED").`in`("LIKES").count()) // поле "likes" = количество лайков постов
+                    .by(gr.out("POSTED").`in`("LIKES").count()) // поле "likes" = количество лайков постов
                     .toList()
                     .forEach { println(it) }
             }
@@ -207,9 +207,9 @@ class SimpleTest {
                 graph.traversal().V()
                     .hasLabel("Person")
                     .choose(
-                        bs.values<Vertex, Int>("age").`is`(gte(30)), // условие: age >= 30
-                        bs.out("FRIEND").values("name"), // если true → друзья
-                        bs.out("POSTED").values<String>("title")  // если false → посты
+                        gr.values<Vertex, Int>("age").`is`(gte(30)), // условие: age >= 30
+                        gr.out("FRIEND").values("name"), // если true → друзья
+                        gr.out("POSTED").values<String>("title")  // если false → посты
                     )
                     .toList()
                     .forEach { println(it) }
@@ -223,7 +223,7 @@ class SimpleTest {
             graphFactory.get().use { graph ->
                 val closestFriends = graph.traversal().V()
                     .hasLabel("Person").has("name", "Alice")
-                    .repeat(bs.out("FRIEND")).times(2)
+                    .repeat(gr.out("FRIEND")).times(2)
                     .dedup()
                     .values<String>("name")
                     .toList()
