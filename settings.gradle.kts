@@ -18,3 +18,4 @@ includeBuild("ok-marketplace-libs")
 
 includeBuild("ok-marketplace-tests")
 includeBuild("pgkn")
+includeBuild("ok-marketplace-ml")
